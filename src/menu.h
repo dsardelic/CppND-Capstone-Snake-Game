@@ -7,7 +7,9 @@ struct Menu {
   int option{0};
 
   void RunGameLoop();
-  void PlayNewGame();
+  int PlayNewGame();
+  void UpdateHighScores(int);
+  void ViewHighScores();
 };
 
 #endif

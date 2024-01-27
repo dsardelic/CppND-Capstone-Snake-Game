@@ -8,4 +8,7 @@ constexpr std::size_t kScreenWidth{640};
 constexpr std::size_t kScreenHeight{640};
 constexpr std::size_t kGridWidth{kScreenWidth / 20};
 constexpr std::size_t kGridHeight{kScreenHeight / 20};
+
+const std::string kHighScoresFileUri{"highscores.dat"};
+constexpr std::size_t kMaxHighScoresCount{10};
 }  // namespace Constants
