@@ -63,39 +63,17 @@ void Menu::RunGameLoop() {
 }
 
 void Menu::PlayNewSimpleGame(std::promise<unsigned short>&& score_promise) {
-  Snake uc_snake{
-      Location{Constants::kGridWidth / 2, Constants::kGridHeight / 2},
-      Snake::Direction::kUp
-  };
   Renderer renderer;
   Controller controller;
-  Game* game = new SimpleGame{uc_snake};
+  Game* game = new SimpleGame{};
   game->Run(controller, renderer, Constants::kMsPerFrame);
   score_promise.set_value(game->GetScore());
 }
 
 void Menu::PlayNewAdvancedGame(std::promise<unsigned short>&& score_promise) {
-  std::random_device rd;
-  std::mt19937 gen{rd()};
-  std::uniform_int_distribution<unsigned short> distrib_w{
-      0, Constants::kGridWidth - 1
-  };
-  std::uniform_int_distribution<unsigned short> distrib_h{
-      0, Constants::kGridHeight - 1
-  };
-  unsigned short uc_snake_w{distrib_w(gen)};
-  unsigned short uc_snake_h{distrib_h(gen)};
-  unsigned short ac_snake_w(
-      (uc_snake_w + Constants::kGridWidth / 2) % Constants::kGridWidth
-  );
-  unsigned short ac_snake_h(
-      (uc_snake_h + Constants::kGridHeight / 2) % Constants::kGridHeight
-  );
-  Snake uc_snake{Location{uc_snake_w, uc_snake_h}, Snake::Direction::kUp};
-  Snake ac_snake{Location{ac_snake_w, ac_snake_h}, Snake::Direction::kUp};
   Renderer renderer;
   Controller controller;
-  Game* game = new AdvancedGame{uc_snake, ac_snake};
+  Game* game = new AdvancedGame{};
   game->Run(controller, renderer, Constants::kMsPerFrame);
   score_promise.set_value(game->GetScore());
 }

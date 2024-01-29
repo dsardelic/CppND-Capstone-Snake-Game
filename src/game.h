@@ -10,12 +10,11 @@
 
 class Game {
  public:
-  Game(Snake&);
+  Game();
   virtual void Run(const Controller&, Renderer&, unsigned short) = 0;
   unsigned short GetScore() const;
 
  protected:
-  Snake uc_snake_;  // user-controlled Snake
   Location food_location_;
   unsigned short score_{0};
   std::mt19937 engine_;
@@ -29,21 +28,24 @@ class Game {
 
 class SimpleGame : public Game {
  public:
-  SimpleGame(Snake&);
+  SimpleGame();
   void Run(const Controller&, Renderer&, unsigned short) override;
 
  private:
   void PlaceFood() override;
   void Update() override;
   void CheckForCollisions() override;
+
+  Snake uc_snake_;  // user-controlled Snake
 };
 
 class AdvancedGame : public Game {
  public:
-  AdvancedGame(Snake&, Snake&);
+  AdvancedGame();
   void Run(const Controller&, Renderer&, unsigned short) override;
 
  private:
+  Snake uc_snake_;  // user-controlled Snake
   Snake ac_snake_;  // autonomous Snake
 
   void PlaceFood() override;

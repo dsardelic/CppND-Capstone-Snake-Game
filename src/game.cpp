@@ -11,7 +11,7 @@
 #include "renderer.h"    // Renderer
 #include "snake.h"       // Snake
 
-Game::Game(Snake& snake) : uc_snake_{snake} {
+Game::Game() {
   std::random_device dev;
   engine_ = std::mt19937(dev());
   random_w_ = std::uniform_int_distribution<unsigned short>(
@@ -24,7 +24,14 @@ Game::Game(Snake& snake) : uc_snake_{snake} {
 
 unsigned short Game::GetScore() const { return score_; }
 
-SimpleGame::SimpleGame(Snake& snake) : Game{snake} { PlaceFood(); };
+SimpleGame::SimpleGame()
+    : Game{},
+      uc_snake_{
+          Location{Constants::kGridWidth / 2, Constants::kGridHeight / 2},
+          Snake::Direction::kUp
+      } {
+  PlaceFood();
+};
 
 void SimpleGame::Run(
     const Controller& controller, Renderer& renderer,
@@ -101,8 +108,21 @@ void SimpleGame::CheckForCollisions() {
   }
 }
 
-AdvancedGame::AdvancedGame(Snake& uc_snake, Snake& ac_snake)
-    : Game{uc_snake}, ac_snake_{ac_snake} {
+AdvancedGame::AdvancedGame()
+    : Game{},
+      uc_snake_{
+          Location{random_w_(engine_), random_h_(engine_)},
+          Snake::Direction::kUp
+      },
+      ac_snake_{
+          Location{random_w_(engine_), random_h_(engine_)},
+          Snake::Direction::kUp
+      } {
+  if (ac_snake_.HeadLocation().ManhattanDistance(uc_snake_.HeadLocation()) <
+      Constants::kMinDistanceBetweenSnakes) {
+    ac_snake_.head_x = random_w_(engine_);
+    ac_snake_.head_y = random_h_(engine_);
+  }
   PlaceFood();
 }
 
