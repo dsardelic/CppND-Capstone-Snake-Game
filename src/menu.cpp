@@ -1,8 +1,10 @@
 #include "menu.h"
 
+#include <future>    // std::promise, std::future
 #include <iostream>  // std::cout
 #include <random>    // std::random_device
 #include <string>    // std::string, std::getline
+#include <thread>    // std::thread
 
 #include "constants.h"  // Constants
 #include "game.h"       // Game
@@ -31,12 +33,26 @@ void Menu::RunGameLoop() {
     } while (!(is_valid_input && option >= 1 && option <= 4));
 
     switch (option) {
-      case 1:
-        UpdateHighScores(PlayNewSimpleGame());
+      case 1: {
+        std::promise<unsigned short> score_promise;
+        std::future<unsigned short> score_future{score_promise.get_future()};
+        std::thread game_thread{
+            &Menu::PlayNewSimpleGame, this, std::move(score_promise)
+        };
+        UpdateHighScores(score_future.get());
+        game_thread.join();
         break;
-      case 2:
-        UpdateHighScores(PlayNewAdvancedGame());
+      }
+      case 2: {
+        std::promise<unsigned short> score_promise;
+        std::future<unsigned short> score_future{score_promise.get_future()};
+        std::thread game_thread{
+            &Menu::PlayNewAdvancedGame, this, std::move(score_promise)
+        };
+        UpdateHighScores(score_future.get());
+        game_thread.join();
         break;
+      }
       case 3:
         ViewHighScores();
         break;
@@ -46,7 +62,7 @@ void Menu::RunGameLoop() {
   }
 }
 
-unsigned short Menu::PlayNewSimpleGame() {
+void Menu::PlayNewSimpleGame(std::promise<unsigned short>&& score_promise) {
   Snake uc_snake{
       Location{Constants::kGridWidth / 2, Constants::kGridHeight / 2},
       Snake::Direction::kUp
@@ -55,10 +71,10 @@ unsigned short Menu::PlayNewSimpleGame() {
   Controller controller;
   Game* game = new SimpleGame{uc_snake};
   game->Run(controller, renderer, Constants::kMsPerFrame);
-  return game->GetScore();
+  score_promise.set_value(game->GetScore());
 }
 
-unsigned short Menu::PlayNewAdvancedGame() {
+void Menu::PlayNewAdvancedGame(std::promise<unsigned short>&& score_promise) {
   std::random_device rd;
   std::mt19937 gen{rd()};
   std::uniform_int_distribution<unsigned short> distrib_w{
@@ -81,7 +97,7 @@ unsigned short Menu::PlayNewAdvancedGame() {
   Controller controller;
   Game* game = new AdvancedGame{uc_snake, ac_snake};
   game->Run(controller, renderer, Constants::kMsPerFrame);
-  return game->GetScore();
+  score_promise.set_value(game->GetScore());
 }
 
 void Menu::UpdateHighScores(unsigned short score) {

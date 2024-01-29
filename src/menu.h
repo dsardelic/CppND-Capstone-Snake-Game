@@ -1,10 +1,12 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <future>  // std::promise
+
 struct Menu {
   void RunGameLoop();
-  unsigned short PlayNewSimpleGame();
-  unsigned short PlayNewAdvancedGame();
+  void PlayNewSimpleGame(std::promise<unsigned short>&&);
+  void PlayNewAdvancedGame(std::promise<unsigned short>&&);
   void UpdateHighScores(unsigned short);
   void ViewHighScores();
 };
