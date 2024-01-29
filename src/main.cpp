@@ -6,6 +6,6 @@ int main() {
   std::cout << "WELCOME TO SNAKE GAME!" << std::endl;
   std::cout << std::endl;
   Menu menu;
-  menu.RunGameLoop();
+  menu.Show();
   return 0;
 }

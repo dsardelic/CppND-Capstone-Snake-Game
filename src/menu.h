@@ -4,7 +4,7 @@
 #include <future>  // std::promise
 
 struct Menu {
-  void RunGameLoop();
+  void Show();
   void PlayNewSimpleGame(std::promise<unsigned short>&&);
   void PlayNewAdvancedGame(std::promise<unsigned short>&&);
   void UpdateHighScores(unsigned short);

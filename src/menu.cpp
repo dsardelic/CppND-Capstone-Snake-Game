@@ -10,7 +10,7 @@
 #include "game.h"       // Game
 #include "highscore.h"  // HighScores
 
-void Menu::RunGameLoop() {
+void Menu::Show() {
   unsigned short option;
   while (1) {
     bool is_valid_input{false};
