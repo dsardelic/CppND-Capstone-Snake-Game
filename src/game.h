@@ -1,24 +1,26 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "SDL.h"         // SDL_Point
+#include <random>  // std::mt19937
+
 #include "controller.h"  // Controller
+#include "location.h"    // Location
 #include "renderer.h"    // Renderer
 #include "snake.h"       // Snake
 
 class Game {
  public:
-  Game(Snake& user_snake);
-  virtual void Run(
-      const Controller& controller, Renderer& renderer,
-      std::size_t target_frame_duration
-  ) = 0;
-  unsigned GetScore() const;
+  Game(Snake&);
+  virtual void Run(const Controller&, Renderer&, unsigned short) = 0;
+  unsigned short GetScore() const;
 
  protected:
   Snake uc_snake_;  // user-controlled Snake
-  SDL_Point food_;
-  unsigned score_{0};
+  Location food_location_;
+  unsigned short score_{0};
+  std::mt19937 engine_;
+  std::uniform_int_distribution<unsigned short> random_w_;
+  std::uniform_int_distribution<unsigned short> random_h_;
 
   virtual void PlaceFood() = 0;
   virtual void Update() = 0;
@@ -28,10 +30,7 @@ class Game {
 class SimpleGame : public Game {
  public:
   SimpleGame(Snake&);
-  void Run(
-      const Controller& controller, Renderer& renderer,
-      std::size_t target_frame_duration
-  ) override;
+  void Run(const Controller&, Renderer&, unsigned short) override;
 
  private:
   void PlaceFood() override;
@@ -42,10 +41,7 @@ class SimpleGame : public Game {
 class AdvancedGame : public Game {
  public:
   AdvancedGame(Snake&, Snake&);
-  void Run(
-      const Controller& controller, Renderer& renderer,
-      std::size_t target_frame_duration
-  ) override;
+  void Run(const Controller&, Renderer&, unsigned short) override;
 
  private:
   Snake ac_snake_;  // autonomous Snake
@@ -56,23 +52,12 @@ class AdvancedGame : public Game {
   void UpdateAutonomousSnakeHeading();
 };
 
-struct Location {
-  Location();
-  Location(int, int);
-  bool operator==(const Location&) const;
-  bool operator!=(const Location&) const;
-  bool operator<(const Location&) const;
-  int ManhattanDistance(const Location&) const;
-
-  int x, y;
-};
-
 struct Node {
-  Node(const Location&, int, const Location&);
+  Node(const Location&, unsigned short, const Location&);
   bool operator>(const Node&) const;
 
   Location location;
-  int g_score, f_score;
+  unsigned short g_score, f_score;
 };
 
 #endif

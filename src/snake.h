@@ -3,42 +3,31 @@
 
 #include <vector>  // std::vector
 
-#include "SDL.h"        // SDL_Point
-#include "constants.h"  // Constants
+#include "location.h"  // Location
 
 class Snake {
  public:
   enum class Direction { kUp, kDown, kLeft, kRight };
 
-  Snake(int head_x, int head_y, Direction direction)
-      : grid_width(Constants::kGridWidth),
-        grid_height(Constants::kGridHeight),
-        head_x(head_x),
-        head_y(head_y),
-        direction(direction) {}
-
+  Snake(const Location&, Direction);
   void Update();
-
   void GrowBody();
-  bool SnakeCell(int x, int y);
+  bool Occupies(const Location&) const;
+  Location HeadLocation() const;
+  unsigned short Size();
 
-  // Direction direction = Direction::kUp;
-  Direction direction;
-
-  float speed{0.1f};
-  int size{1};
-  bool alive{true};
   float head_x;
   float head_y;
-  std::vector<SDL_Point> body;
+  std::vector<Location> body;
+  float speed{0.1f};
+  Direction direction;
+  bool alive{true};
 
  private:
   void UpdateHead();
-  void UpdateBody(SDL_Point& current_cell, SDL_Point& prev_cell);
+  void UpdateBody(const Location&);
 
   bool growing{false};
-  int grid_width;
-  int grid_height;
 };
 
 #endif

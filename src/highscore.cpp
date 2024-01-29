@@ -1,6 +1,7 @@
 #include "highscore.h"
 
 #include <algorithm>   // std::sort, std::min_element
+#include <cstddef>     // std::size_t
 #include <filesystem>  // std::filesystem
 #include <fstream>     // std::ifstream, std::ofstream
 #include <iomanip>     // std::setw, std::setfill
@@ -34,7 +35,7 @@ bool HighScore::operator>(const HighScore& rhs) const {
   return score > rhs.score;
 }
 
-void HighScores::Add(std::string name, int score) {
+void HighScores::Add(std::string name, unsigned short score) {
   std::size_t i{0};
   for (; i < high_scores_.size(); ++i) {
     if (score > high_scores_.at(i).score) break;
@@ -85,7 +86,7 @@ HighScores::HighScores(std::string uri) {
   }
 }
 
-bool HighScores::IsNewHighScore(int score) const {
+bool HighScores::IsNewHighScore(unsigned short score) const {
   if (score == 0) return false;
   if (high_scores_.size() < Constants::kMaxHighScoresCount) return true;
   auto min_high_score{
@@ -94,7 +95,7 @@ bool HighScores::IsNewHighScore(int score) const {
   return score > min_high_score;
 }
 
-void HighScores::Save(std::string name, int score) {
+void HighScores::Save(std::string name, unsigned short score) {
   Add(name, score);
   WriteToFile(Constants::kHighScoresFileUri);
 }
@@ -102,7 +103,7 @@ void HighScores::Save(std::string name, int score) {
 void HighScores::Print() const {
   if (high_scores_.size() > 0) {
     std::cout << "HIGH SCORES" << std::endl;
-    std::size_t rank(0);
+    unsigned short rank(0);
     for (const auto& hs : high_scores_) {
       ++rank;
       std::cout << std::right << std::setw(2) << std::setfill(' ') << rank;

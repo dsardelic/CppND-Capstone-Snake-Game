@@ -2,12 +2,10 @@
 #define MENU_H
 
 struct Menu {
-  int option{};
-
   void RunGameLoop();
-  int PlayNewSimpleGame();
-  int PlayNewAdvancedGame();
-  void UpdateHighScores(int);
+  unsigned short PlayNewSimpleGame();
+  unsigned short PlayNewAdvancedGame();
+  void UpdateHighScores(unsigned short);
   void ViewHighScores();
 };
 

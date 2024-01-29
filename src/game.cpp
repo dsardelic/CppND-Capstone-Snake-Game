@@ -1,35 +1,41 @@
 #include "game.h"
 
-#include <cmath>       // std::abs
 #include <functional>  // std::greater
-#include <iostream>
-#include <map>     // std::map
-#include <queue>   // std::priority_queue
-#include <random>  // std::random_device
-#include <set>     // std::set
+#include <map>         // std::map
+#include <queue>       // std::priority_queue
+#include <set>         // std::set
 
-#include "SDL.h"         // SDL_Point
 #include "constants.h"   // Constants
 #include "controller.h"  // Controller
+#include "location.h"    // Location
 #include "renderer.h"    // Renderer
 #include "snake.h"       // Snake
 
-Game::Game(Snake& snake) : uc_snake_{snake} {}
+Game::Game(Snake& snake) : uc_snake_{snake} {
+  std::random_device dev;
+  engine_ = std::mt19937(dev());
+  random_w_ = std::uniform_int_distribution<unsigned short>(
+      0, Constants::kGridWidth - 1
+  );
+  random_h_ = std::uniform_int_distribution<unsigned short>(
+      0, Constants::kGridHeight - 1
+  );
+}
 
-unsigned Game::GetScore() const { return score_; }
+unsigned short Game::GetScore() const { return score_; }
 
 SimpleGame::SimpleGame(Snake& snake) : Game{snake} { PlaceFood(); };
 
 void SimpleGame::Run(
     const Controller& controller, Renderer& renderer,
-    std::size_t target_frame_duration
+    unsigned short target_frame_duration
 ) {
   Uint32 title_timestamp = SDL_GetTicks();
   Uint32 frame_start;
   Uint32 frame_end;
   Uint32 frame_duration;
-  int frame_count = 0;
-  bool running = true;
+  unsigned short frame_count{0};
+  bool running{true};
 
   while (running) {
     frame_start = SDL_GetTicks();
@@ -37,7 +43,7 @@ void SimpleGame::Run(
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, uc_snake_);
     Update();
-    renderer.Render(uc_snake_, food_);
+    renderer.Render(uc_snake_, food_location_);
 
     frame_end = SDL_GetTicks();
 
@@ -63,23 +69,10 @@ void SimpleGame::Run(
 }
 
 void SimpleGame::PlaceFood() {
-  std::random_device dev;
-  std::mt19937 engine(dev());
-  std::uniform_int_distribution<int> random_w(
-      0, static_cast<int>(Constants::kGridWidth - 1)
-  );
-  std::uniform_int_distribution<int> random_h(
-      0, static_cast<int>(Constants::kGridHeight - 1)
-  );
-  int x, y;
-  while (true) {
-    x = random_w(engine);
-    y = random_h(engine);
-    // Check that the location is not occupied by a snake item before placing
-    // food.
-    if (!uc_snake_.SnakeCell(x, y)) {
-      food_.x = x;
-      food_.y = y;
+  while (1) {
+    Location location{random_w_(engine_), random_h_(engine_)};
+    if (!uc_snake_.Occupies(location)) {
+      food_location_ = location;
       return;
     }
   }
@@ -89,47 +82,40 @@ void SimpleGame::Update() {
   if (!uc_snake_.alive) return;
   uc_snake_.Update();
   CheckForCollisions();
-  int new_x1 = static_cast<int>(uc_snake_.head_x);
-  int new_y1 = static_cast<int>(uc_snake_.head_y);
-  // Check if there's food over here
-  if (food_.x == new_x1 && food_.y == new_y1) {
+  if (uc_snake_.HeadLocation() == food_location_) {
     ++score_;
     PlaceFood();
-    // Grow snake and increase speed.
     uc_snake_.GrowBody();
-    uc_snake_.speed += 0.02;
+    uc_snake_.speed += Constants::kSnakeSpeedIncreaseStep;
   }
 }
 
 void SimpleGame::CheckForCollisions() {
-  SDL_Point uc_snake__head{
-      static_cast<int>(uc_snake_.head_x), static_cast<int>(uc_snake_.head_y)
-  };
-
+  auto head{uc_snake_.HeadLocation()};
   // check for uc_snake_ self-collision
-  for (auto const& body_item : uc_snake_.body) {
-    if (uc_snake__head.x == body_item.x && uc_snake__head.y == body_item.y) {
+  for (const auto& body_item : uc_snake_.body) {
+    if (head == body_item) {
       uc_snake_.alive = false;
       break;
     }
   }
 }
 
-AdvancedGame::AdvancedGame(Snake& uc_snake_, Snake& ac_snake_)
-    : Game{uc_snake_}, ac_snake_{ac_snake_} {
+AdvancedGame::AdvancedGame(Snake& uc_snake, Snake& ac_snake)
+    : Game{uc_snake}, ac_snake_{ac_snake} {
   PlaceFood();
 }
 
 void AdvancedGame::Run(
     const Controller& controller, Renderer& renderer,
-    std::size_t target_frame_duration
+    unsigned short target_frame_duration
 ) {
   Uint32 title_timestamp = SDL_GetTicks();
   Uint32 frame_start;
   Uint32 frame_end;
   Uint32 frame_duration;
-  int frame_count = 0;
-  bool running = true;
+  unsigned short frame_count{0};
+  bool running{true};
 
   while (running) {
     frame_start = SDL_GetTicks();
@@ -137,7 +123,7 @@ void AdvancedGame::Run(
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, uc_snake_);
     Update();
-    renderer.Render(uc_snake_, ac_snake_, food_);
+    renderer.Render(uc_snake_, ac_snake_, food_location_);
 
     frame_end = SDL_GetTicks();
 
@@ -163,23 +149,10 @@ void AdvancedGame::Run(
 }
 
 void AdvancedGame::PlaceFood() {
-  std::random_device dev;
-  std::mt19937 engine(dev());
-  std::uniform_int_distribution<int> random_w(
-      0, static_cast<int>(Constants::kGridWidth - 1)
-  );
-  std::uniform_int_distribution<int> random_h(
-      0, static_cast<int>(Constants::kGridHeight - 1)
-  );
-  int x, y;
-  while (true) {
-    x = random_w(engine);
-    y = random_h(engine);
-    // Check that the location is not occupied by a snake item before placing
-    // food.
-    if (!uc_snake_.SnakeCell(x, y) && !ac_snake_.SnakeCell(x, y)) {
-      food_.x = x;
-      food_.y = y;
+  while (1) {
+    Location location{random_w_(engine_), random_h_(engine_)};
+    if (!(uc_snake_.Occupies(location) || ac_snake_.Occupies(location))) {
+      food_location_ = location;
       return;
     }
   }
@@ -187,67 +160,48 @@ void AdvancedGame::PlaceFood() {
 
 void AdvancedGame::Update() {
   if (!(uc_snake_.alive && ac_snake_.alive)) return;
-
   uc_snake_.Update();
   UpdateAutonomousSnakeHeading();
   ac_snake_.Update();
-
   CheckForCollisions();
-
-  int new_x1 = static_cast<int>(uc_snake_.head_x);
-  int new_y1 = static_cast<int>(uc_snake_.head_y);
-  // Check if there's food over here
-  if (food_.x == new_x1 && food_.y == new_y1) {
+  if (uc_snake_.HeadLocation() == food_location_) {
     ++score_;
     PlaceFood();
-    // Grow snake and increase speed.
     uc_snake_.GrowBody();
-    uc_snake_.speed += 0.02;
+    uc_snake_.speed += Constants::kSnakeSpeedIncreaseStep;
   }
-
-  int new_x2 = static_cast<int>(ac_snake_.head_x);
-  int new_y2 = static_cast<int>(ac_snake_.head_y);
-  // Check if there's food over here
-  if (food_.x == new_x2 && food_.y == new_y2) {
-    // score++;
+  if (ac_snake_.HeadLocation() == food_location_) {
     PlaceFood();
-    // Grow snake and increase speed.
     ac_snake_.GrowBody();
-    // uc_snake_.speed += 0.02;
   }
 }
 
 void AdvancedGame::CheckForCollisions() {
-  SDL_Point uc_snake__head{
-      static_cast<int>(uc_snake_.head_x), static_cast<int>(uc_snake_.head_y)
-  };
-  SDL_Point ac_snake__head{
-      static_cast<int>(ac_snake_.head_x), static_cast<int>(ac_snake_.head_y)
-  };
+  auto uc_snake_head{uc_snake_.HeadLocation()};
+  auto ac_snake_head{ac_snake_.HeadLocation()};
 
-  // check for uc_snake_-ac_snake_ head-on collision
-  if (uc_snake__head.x == ac_snake__head.x &&
-      uc_snake__head.y == ac_snake__head.y) {
+  // check for head-on collision between snakes
+  if (uc_snake_head == ac_snake_head) {
     uc_snake_.alive = false;
     ac_snake_.alive = false;
   }
 
-  // check if uc_snake_ collided with ac_snake_'s body
-  for (auto const& body_item : ac_snake_.body) {
-    if (uc_snake__head.x == body_item.x && uc_snake__head.y == body_item.y) {
+  // check if uc_snake collided with ac_snake's body
+  for (const auto& body_item : ac_snake_.body) {
+    if (uc_snake_head == body_item) {
       uc_snake_.alive = false;
       break;
     }
   }
 
-  // check if ac_snake_ collided with uc_snake_'s body
-  // check for uc_snake_ self-collision
-  for (auto const& body_item : uc_snake_.body) {
-    if (ac_snake__head.x == body_item.x && ac_snake__head.y == body_item.y) {
+  // check if ac_snake collided with uc_snake's body
+  // check for uc_snake self-collision
+  for (const auto& body_item : uc_snake_.body) {
+    if (ac_snake_head == body_item) {
       ac_snake_.alive = false;
       break;
     }
-    if (uc_snake__head.x == body_item.x && uc_snake__head.y == body_item.y) {
+    if (uc_snake_head == body_item) {
       uc_snake_.alive = false;
       break;
     }
@@ -257,7 +211,7 @@ void AdvancedGame::CheckForCollisions() {
 // Using A* algorithm
 Location NextLocation(
     const Location& origin, const Location& destination,
-    const std::vector<SDL_Point>& obstacles
+    const std::vector<Location>& obstacles
 ) {
   std::map<Location, Location> location_to_predecessor;
   std::set<Location> processed;
@@ -267,7 +221,7 @@ Location NextLocation(
     auto node = unprocessed.top();
     unprocessed.pop();
     if (node.location == destination) break;
-    static const int neighbor_offsets[4][2] = {
+    static const short neighbor_offsets[4][2] = {
         {-1, 0}, {1, 0}, {0, -1}, {0, 1}
     };
     for (const auto& offset : neighbor_offsets) {
@@ -280,13 +234,13 @@ Location NextLocation(
       if (processed.find(neighbor) == processed.end()) {
         bool is_obstacle{false};
         for (const auto& obstacle : obstacles) {
-          if (neighbor == Location{obstacle.x, obstacle.y}) {
+          if (neighbor == obstacle) {
             is_obstacle = true;
             break;
           }
         }
         if (!is_obstacle) {
-          unprocessed.push(Node{neighbor, node.g_score + 1, destination});
+          unprocessed.push(Node(neighbor, node.g_score + 1, destination));
           location_to_predecessor[neighbor] = node.location;
         }
       }
@@ -304,12 +258,11 @@ Location NextLocation(
 }
 
 void AdvancedGame::UpdateAutonomousSnakeHeading() {
-  Location location{
-      static_cast<int>(ac_snake_.head_x), static_cast<int>(ac_snake_.head_y)
+  Location head_location{ac_snake_.HeadLocation()};
+  Location next_head_location{
+      NextLocation(head_location, food_location_, ac_snake_.body)
   };
-  Location destination{food_.x, food_.y};
-  Location next_location = NextLocation(location, destination, ac_snake_.body);
-  switch (next_location.x - location.x) {
+  switch (next_head_location.x - head_location.x) {
     case -1:
       ac_snake_.direction = Snake::Direction::kLeft;
       break;
@@ -317,7 +270,7 @@ void AdvancedGame::UpdateAutonomousSnakeHeading() {
       ac_snake_.direction = Snake::Direction::kRight;
       break;
     case 0:
-      if (next_location.y - location.y == -1) {
+      if (next_head_location.y - head_location.y == -1) {
         ac_snake_.direction = Snake::Direction::kUp;
       } else {
         ac_snake_.direction = Snake::Direction::kDown;
@@ -325,27 +278,10 @@ void AdvancedGame::UpdateAutonomousSnakeHeading() {
   }
 }
 
-Location::Location() : x{}, y{} {}
-
-Location::Location(int x, int y) : x{x}, y{y} {}
-
-bool Location::operator==(const Location& rhs) const {
-  return x == rhs.x && y == rhs.y;
-}
-
-bool Location::operator!=(const Location& rhs) const { return !(*this == rhs); }
-
-bool Location::operator<(const Location& rhs) const {
-  if (x < rhs.x) return true;
-  if (x == rhs.x && y < rhs.y) return true;
-  return false;
-}
-
-int Location::ManhattanDistance(const Location& rhs) const {
-  return std::abs(x - rhs.x) + std::abs(y - rhs.y);
-}
-
-Node::Node(const Location& location, int g_score, const Location& destination)
+Node::Node(
+    const Location& location, unsigned short g_score,
+    const Location& destination
+)
     : location{location}, g_score{g_score} {
   f_score = g_score + location.ManhattanDistance(destination);
 }

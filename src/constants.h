@@ -1,21 +1,19 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include <stdlib.h>  // std::size_t
-
 #include <string>  // std::string
 
 namespace Constants {
 
-constexpr std::size_t kFramesPerSecond{60};
-constexpr std::size_t kMsPerFrame{1000 / kFramesPerSecond};
-constexpr std::size_t kScreenWidth{640};
-constexpr std::size_t kScreenHeight{640};
-constexpr std::size_t kGridWidth{kScreenWidth / 20};
-constexpr std::size_t kGridHeight{kScreenHeight / 20};
-
+constexpr unsigned short kFramesPerSecond{60};
+constexpr unsigned short kMsPerFrame{1000 / kFramesPerSecond};
+constexpr unsigned short kScreenWidth{640};
+constexpr unsigned short kScreenHeight{640};
+constexpr unsigned short kGridWidth{kScreenWidth / 20};
+constexpr unsigned short kGridHeight{kScreenHeight / 20};
+constexpr unsigned short kMaxHighScoresCount{10};
 const std::string kHighScoresFileUri{"highscores.dat"};
-constexpr std::size_t kMaxHighScoresCount{10};
+constexpr float kSnakeSpeedIncreaseStep{0.02f};
 }  // namespace Constants
 
 #endif

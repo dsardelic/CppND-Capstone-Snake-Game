@@ -2,22 +2,21 @@
 
 #include <cmath>  // std::fmod
 
-#include "SDL.h"  // SDL_Point
+#include "constants.h"
+#include "location.h"
+
+Snake::Snake(const Location& head_location, Direction direction)
+    : head_x(head_location.x), head_y(head_location.y), direction(direction) {}
 
 void Snake::Update() {
-  SDL_Point prev_cell{
-      static_cast<int>(head_x), static_cast<int>(head_y)
-  };  // We first capture the head's cell before updating.
+  // We first capture the head's cell before updating.
+  Location prev_head{HeadLocation()};
   UpdateHead();
-  SDL_Point current_cell{
-      static_cast<int>(head_x), static_cast<int>(head_y)
-  };  // Capture the head's cell after updating.
-
-  // Update all of the body vector items if the snake head has moved to a new
-  // cell.
-  if (current_cell.x != prev_cell.x || current_cell.y != prev_cell.y) {
-    UpdateBody(current_cell, prev_cell);
-  }
+  // Capture the head's cell after updating.
+  Location current_head{HeadLocation()};
+  // Update all of the body vector items
+  // if the snake head has moved to a new cell.
+  if (prev_head != current_head) UpdateBody(prev_head);
 }
 
 void Snake::UpdateHead() {
@@ -25,51 +24,46 @@ void Snake::UpdateHead() {
     case Direction::kUp:
       head_y -= speed;
       break;
-
     case Direction::kDown:
       head_y += speed;
       break;
-
     case Direction::kLeft:
       head_x -= speed;
       break;
-
     case Direction::kRight:
       head_x += speed;
-      break;
   }
 
   // Wrap the Snake around to the beginning if going off of the screen.
-  head_x = std::fmod(head_x + grid_width, grid_width);
-  head_y = std::fmod(head_y + grid_height, grid_height);
+  head_x = std::fmod(head_x + Constants::kGridWidth, Constants::kGridWidth);
+  head_y = std::fmod(head_y + Constants::kGridHeight, Constants::kGridHeight);
 }
 
-void Snake::UpdateBody(
-    SDL_Point& current_head_cell, SDL_Point& prev_head_cell
-) {
-  // Add previous head location to vector
-  body.push_back(prev_head_cell);
-
+void Snake::UpdateBody(const Location& prev_head) {
+  // add previous head location to vector
+  body.push_back(prev_head);
   if (!growing) {
-    // Remove the tail from the vector.
+    // remove the tail from the vector
     body.erase(body.begin());
   } else {
     growing = false;
-    size++;
   }
 }
 
 void Snake::GrowBody() { growing = true; }
 
-// Inefficient method to check if cell is occupied by snake.
-bool Snake::SnakeCell(int x, int y) {
-  if (x == static_cast<int>(head_x) && y == static_cast<int>(head_y)) {
-    return true;
-  }
-  for (auto const& item : body) {
-    if (x == item.x && y == item.y) {
-      return true;
-    }
+bool Snake::Occupies(const Location& location) const {
+  if (location == HeadLocation()) return true;
+  for (auto const& body_item_location : body) {
+    if (location == body_item_location) return true;
   }
   return false;
 }
+
+Location Snake::HeadLocation() const {
+  return Location{
+      static_cast<unsigned short>(head_x), static_cast<unsigned short>(head_y)
+  };
+}
+
+unsigned short Snake::Size() { return body.size() + 1; }

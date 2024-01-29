@@ -9,6 +9,7 @@
 #include "highscore.h"  // HighScores
 
 void Menu::RunGameLoop() {
+  unsigned short option;
   while (1) {
     bool is_valid_input{false};
     do {
@@ -45,10 +46,11 @@ void Menu::RunGameLoop() {
   }
 }
 
-int Menu::PlayNewSimpleGame() {
-  int center_w(Constants::kGridWidth / 2);
-  int center_h(Constants::kGridHeight / 2);
-  Snake uc_snake{center_w, center_h, Snake::Direction::kUp};
+unsigned short Menu::PlayNewSimpleGame() {
+  Snake uc_snake{
+      Location{Constants::kGridWidth / 2, Constants::kGridHeight / 2},
+      Snake::Direction::kUp
+  };
   Renderer renderer;
   Controller controller;
   Game* game = new SimpleGame{uc_snake};
@@ -56,25 +58,25 @@ int Menu::PlayNewSimpleGame() {
   return game->GetScore();
 }
 
-int Menu::PlayNewAdvancedGame() {
+unsigned short Menu::PlayNewAdvancedGame() {
   std::random_device rd;
   std::mt19937 gen{rd()};
-  std::uniform_int_distribution<> distrib_w{
-      0, static_cast<int>(Constants::kGridWidth - 1)
+  std::uniform_int_distribution<unsigned short> distrib_w{
+      0, Constants::kGridWidth - 1
   };
-  std::uniform_int_distribution<> distrib_h{
-      0, static_cast<int>(Constants::kGridHeight - 1)
+  std::uniform_int_distribution<unsigned short> distrib_h{
+      0, Constants::kGridHeight - 1
   };
-  int uc_snake_w{distrib_w(gen)};
-  int uc_snake_h{distrib_h(gen)};
-  int ac_snake_w(
+  unsigned short uc_snake_w{distrib_w(gen)};
+  unsigned short uc_snake_h{distrib_h(gen)};
+  unsigned short ac_snake_w(
       (uc_snake_w + Constants::kGridWidth / 2) % Constants::kGridWidth
   );
-  int ac_snake_h(
+  unsigned short ac_snake_h(
       (uc_snake_h + Constants::kGridHeight / 2) % Constants::kGridHeight
   );
-  Snake uc_snake{uc_snake_w, uc_snake_h, Snake::Direction::kUp};
-  Snake ac_snake{ac_snake_w, ac_snake_h, Snake::Direction::kUp};
+  Snake uc_snake{Location{uc_snake_w, uc_snake_h}, Snake::Direction::kUp};
+  Snake ac_snake{Location{ac_snake_w, ac_snake_h}, Snake::Direction::kUp};
   Renderer renderer;
   Controller controller;
   Game* game = new AdvancedGame{uc_snake, ac_snake};
@@ -82,7 +84,7 @@ int Menu::PlayNewAdvancedGame() {
   return game->GetScore();
 }
 
-void Menu::UpdateHighScores(int score) {
+void Menu::UpdateHighScores(unsigned short score) {
   std::cout << "GAME OVER! Your score: " << score << std::endl;
   HighScores high_scores(Constants::kHighScoresFileUri);
   if (high_scores.IsNewHighScore(score)) {
