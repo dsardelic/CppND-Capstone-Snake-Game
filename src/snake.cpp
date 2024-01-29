@@ -1,7 +1,8 @@
 #include "snake.h"
 
-#include <cmath>
-#include <iostream>
+#include <cmath>  // std::fmod
+
+#include "SDL.h"  // SDL_Point
 
 void Snake::Update() {
   SDL_Point prev_cell{
@@ -39,8 +40,8 @@ void Snake::UpdateHead() {
   }
 
   // Wrap the Snake around to the beginning if going off of the screen.
-  head_x = fmod(head_x + grid_width, grid_width);
-  head_y = fmod(head_y + grid_height, grid_height);
+  head_x = std::fmod(head_x + grid_width, grid_width);
+  head_y = std::fmod(head_y + grid_height, grid_height);
 }
 
 void Snake::UpdateBody(
@@ -55,13 +56,6 @@ void Snake::UpdateBody(
   } else {
     growing = false;
     size++;
-  }
-
-  // Check if the snake has died.
-  for (auto const& item : body) {
-    if (current_head_cell.x == item.x && current_head_cell.y == item.y) {
-      alive = false;
-    }
   }
 }
 

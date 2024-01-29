@@ -1,7 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "snake.h"
+#include "snake.h"  // Snake
 
 class Controller {
  public:

@@ -2,14 +2,16 @@
 
 #include <algorithm>   // std::sort, std::min_element
 #include <filesystem>  // std::filesystem
-#include <fstream>     // std::istream, std::ostream
+#include <fstream>     // std::ifstream, std::ofstream
 #include <iomanip>     // std::setw, std::setfill
 #include <iostream>    // std::cout, std:cerr
+#include <istream>     // std::istream
+#include <ostream>     // std::ostream
 #include <sstream>     // std::stringstream
 #include <string>      // std::string
 #include <utility>     // std::move
 
-#include "constants.h"  // kMaxHighScoresCount
+#include "constants.h"  // Constants
 
 std::istream& operator>>(std::istream& is, HighScore& r) {
   std::string name;

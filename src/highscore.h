@@ -1,8 +1,10 @@
 #ifndef HIGHSCORE_H
 #define HIGHSCORE_H
 
-#include <string>  // std::string
-#include <vector>  // std::vector
+#include <istream>  // std::istream
+#include <ostream>  // std::ostream
+#include <string>   // std::string
+#include <vector>   // std::vector
 
 struct HighScore {
   std::string name;

@@ -1,4 +1,9 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
 #include <stdlib.h>  // std::size_t
+
+#include <string>  // std::string
 
 namespace Constants {
 
@@ -12,3 +17,5 @@ constexpr std::size_t kGridHeight{kScreenHeight / 20};
 const std::string kHighScoresFileUri{"highscores.dat"};
 constexpr std::size_t kMaxHighScoresCount{10};
 }  // namespace Constants
+
+#endif

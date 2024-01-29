@@ -1,9 +1,7 @@
 #include "controller.h"
 
-#include <iostream>
-
-#include "SDL.h"
-#include "snake.h"
+#include "SDL.h"    // SDL_PollEvent
+#include "snake.h"  // Snake
 
 void Controller::ChangeDirection(
     Snake& snake, Snake::Direction input, Snake::Direction opposite

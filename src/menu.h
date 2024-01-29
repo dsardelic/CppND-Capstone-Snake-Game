@@ -1,13 +1,12 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "game.h"
-
 struct Menu {
-  int option{0};
+  int option{};
 
   void RunGameLoop();
-  int PlayNewGame();
+  int PlayNewSimpleGame();
+  int PlayNewAdvancedGame();
   void UpdateHighScores(int);
   void ViewHighScores();
 };
