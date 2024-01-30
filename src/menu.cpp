@@ -4,6 +4,7 @@
 
 #include <future>    // std::promise, std::future
 #include <iostream>  // std::cout
+#include <memory>    // std::unique_ptr, std::make_unique
 #include <random>    // std::random_device
 #include <string>    // std::string, std::getline
 #include <thread>    // std::thread
@@ -16,7 +17,7 @@ template <class GameType>
 void RunGame(std::promise<unsigned short>&& score_promise) {
   Renderer renderer;
   Controller controller;
-  Game* game = new GameType{};
+  std::unique_ptr<Game> game{std::make_unique<GameType>()};
   game->Run(controller, renderer, Constants::kMsPerFrame);
   score_promise.set_value(game->GetScore());
 }
@@ -40,6 +41,7 @@ void Menu::Show() {
       std::cout << "2 - Start new advanced game" << std::endl;
       std::cout << "3 - View high scores" << std::endl;
       std::cout << "4 - Exit" << std::endl;
+      std::cout << std::endl;
       std::cout << "Enter option number: ";
       std::cin >> option;
       system("clear");
