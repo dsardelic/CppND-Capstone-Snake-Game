@@ -36,6 +36,7 @@ Renderer::Renderer() {
 Renderer::~Renderer() {
   SDL_DestroyWindow(sdl_window_);
   SDL_Quit();
+  free(sdl_renderer_);
 }
 
 void Renderer::Render(const Snake& uc_snake, const Location& food) {
