@@ -12,6 +12,24 @@
 #include "game.h"       // Game
 #include "highscore.h"  // HighScores
 
+template <class GameType>
+void RunGame(std::promise<unsigned short>&& score_promise) {
+  Renderer renderer;
+  Controller controller;
+  Game* game = new GameType{};
+  game->Run(controller, renderer, Constants::kMsPerFrame);
+  score_promise.set_value(game->GetScore());
+}
+
+template <class GameType>
+void Menu::PlayNewGame() {
+  std::promise<unsigned short> score_promise;
+  std::future<unsigned short> score_future{score_promise.get_future()};
+  std::thread game_thread{RunGame<GameType>, std::move(score_promise)};
+  Menu::UpdateHighScores(score_future.get());
+  game_thread.join();
+}
+
 void Menu::Show() {
   unsigned short option;
   while (1) {
@@ -35,24 +53,11 @@ void Menu::Show() {
     } while (!(is_valid_input && option >= 1 && option <= 4));
 
     switch (option) {
-      case 1: {
-        std::promise<unsigned short> score_promise;
-        std::future<unsigned short> score_future{score_promise.get_future()};
-        std::thread game_thread{
-            &Menu::PlayNewSimpleGame, std::move(score_promise)
-        };
-        UpdateHighScores(score_future.get());
-        game_thread.join();
+      case 1:
+        PlayNewGame<SimpleGame>();
         break;
-      }
       case 2: {
-        std::promise<unsigned short> score_promise;
-        std::future<unsigned short> score_future{score_promise.get_future()};
-        std::thread game_thread{
-            &Menu::PlayNewAdvancedGame, std::move(score_promise)
-        };
-        UpdateHighScores(score_future.get());
-        game_thread.join();
+        PlayNewGame<AdvancedGame>();
         break;
       }
       case 3:
@@ -62,22 +67,6 @@ void Menu::Show() {
         return;
     }
   }
-}
-
-void Menu::PlayNewSimpleGame(std::promise<unsigned short>&& score_promise) {
-  Renderer renderer;
-  Controller controller;
-  Game* game = new SimpleGame{};
-  game->Run(controller, renderer, Constants::kMsPerFrame);
-  score_promise.set_value(game->GetScore());
-}
-
-void Menu::PlayNewAdvancedGame(std::promise<unsigned short>&& score_promise) {
-  Renderer renderer;
-  Controller controller;
-  Game* game = new AdvancedGame{};
-  game->Run(controller, renderer, Constants::kMsPerFrame);
-  score_promise.set_value(game->GetScore());
 }
 
 void Menu::UpdateHighScores(unsigned short score) {

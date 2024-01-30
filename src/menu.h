@@ -5,8 +5,10 @@
 
 namespace Menu {
 void Show();
-void PlayNewSimpleGame(std::promise<unsigned short>&&);
-void PlayNewAdvancedGame(std::promise<unsigned short>&&);
+
+template <class GameType>
+void PlayNewGame();
+
 void UpdateHighScores(unsigned short);
 void ViewHighScores();
 };  // namespace Menu
