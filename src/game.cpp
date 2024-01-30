@@ -1,9 +1,11 @@
 #include "game.h"
 
+#include <chrono>      // std::chrono
 #include <functional>  // std::greater
 #include <map>         // std::map
 #include <queue>       // std::priority_queue
 #include <set>         // std::set
+#include <thread>      // std::this_thread
 
 #include "constants.h"   // Constants
 #include "controller.h"  // Controller
@@ -49,7 +51,7 @@ void SimpleGame::Run(
 
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, uc_snake_);
-    Update();
+    Update(running);
     renderer.Render(uc_snake_, food_location_);
 
     frame_end = SDL_GetTicks();
@@ -85,8 +87,14 @@ void SimpleGame::PlaceFood() {
   }
 }
 
-void SimpleGame::Update() {
-  if (!uc_snake_.alive) return;
+void SimpleGame::Update(bool& running) {
+  if (!uc_snake_.alive) {
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(Constants::kMilisBeforeWindowClose)
+    );
+    running = false;
+    return;
+  }
   uc_snake_.Update();
   CheckForCollisions();
   if (uc_snake_.HeadLocation() == food_location_) {
@@ -142,7 +150,7 @@ void AdvancedGame::Run(
 
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, uc_snake_);
-    Update();
+    Update(running);
     renderer.Render(uc_snake_, ac_snake_, food_location_);
 
     frame_end = SDL_GetTicks();
@@ -178,8 +186,14 @@ void AdvancedGame::PlaceFood() {
   }
 }
 
-void AdvancedGame::Update() {
-  if (!(uc_snake_.alive && ac_snake_.alive)) return;
+void AdvancedGame::Update(bool& running) {
+  if (!(uc_snake_.alive && ac_snake_.alive)) {
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(Constants::kMilisBeforeWindowClose)
+    );
+    running = false;
+    return;
+  }
   uc_snake_.Update();
   UpdateAutonomousSnakeHeading();
   ac_snake_.Update();

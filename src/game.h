@@ -22,7 +22,7 @@ class Game {
   std::uniform_int_distribution<unsigned short> random_h_;
 
   virtual void PlaceFood() = 0;
-  virtual void Update() = 0;
+  virtual void Update(bool&) = 0;
   virtual void CheckForCollisions() = 0;
 };
 
@@ -33,7 +33,7 @@ class SimpleGame : public Game {
 
  private:
   void PlaceFood() override;
-  void Update() override;
+  void Update(bool&) override;
   void CheckForCollisions() override;
 
   Snake uc_snake_;  // user-controlled Snake
@@ -49,7 +49,7 @@ class AdvancedGame : public Game {
   Snake ac_snake_;  // autonomous Snake
 
   void PlaceFood() override;
-  void Update() override;
+  void Update(bool&) override;
   void CheckForCollisions() override;
   void UpdateAutonomousSnakeHeading();
 };

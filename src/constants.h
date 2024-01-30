@@ -13,6 +13,7 @@ constexpr unsigned short kGridWidth{kScreenWidth / 20};
 constexpr unsigned short kGridHeight{kScreenHeight / 20};
 constexpr unsigned short kMaxHighScoresCount{10};
 constexpr unsigned short kMinDistanceBetweenSnakes{25};
+constexpr unsigned short kMilisBeforeWindowClose{1500};
 const std::string kHighScoresFileUri{"highscores.dat"};
 constexpr float kSnakeSpeedIncreaseStep{0.02f};
 }  // namespace Constants
