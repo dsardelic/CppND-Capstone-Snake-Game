@@ -51,7 +51,7 @@ class AdvancedGame : public Game {
   void PlaceFood() override;
   void Update(bool&) override;
   void CheckForCollisions() override;
-  void UpdateAutonomousSnakeHeading();
+  void UpdateSnakeDirection(Snake&, const Location&);
 };
 
 struct Node {

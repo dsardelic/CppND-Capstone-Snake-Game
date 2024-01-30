@@ -195,7 +195,7 @@ void AdvancedGame::Update(bool& running) {
     return;
   }
   uc_snake_.Update();
-  UpdateAutonomousSnakeHeading();
+  UpdateSnakeDirection(ac_snake_, food_location_);
   ac_snake_.Update();
   CheckForCollisions();
   if (uc_snake_.HeadLocation() == food_location_) {
@@ -291,23 +291,25 @@ Location NextLocation(
   return location;
 }
 
-void AdvancedGame::UpdateAutonomousSnakeHeading() {
-  Location head_location{ac_snake_.HeadLocation()};
+void AdvancedGame::UpdateSnakeDirection(
+    Snake& snake, const Location& destination
+) {
+  Location head_location{snake.HeadLocation()};
   Location next_head_location{
-      NextLocation(head_location, food_location_, ac_snake_.body)
+      NextLocation(head_location, destination, snake.body)
   };
   switch (next_head_location.x - head_location.x) {
     case -1:
-      ac_snake_.direction = Snake::Direction::kLeft;
+      snake.direction = Snake::Direction::kLeft;
       break;
     case 1:
-      ac_snake_.direction = Snake::Direction::kRight;
+      snake.direction = Snake::Direction::kRight;
       break;
     case 0:
       if (next_head_location.y - head_location.y == -1) {
-        ac_snake_.direction = Snake::Direction::kUp;
+        snake.direction = Snake::Direction::kUp;
       } else {
-        ac_snake_.direction = Snake::Direction::kDown;
+        snake.direction = Snake::Direction::kDown;
       }
   }
 }
