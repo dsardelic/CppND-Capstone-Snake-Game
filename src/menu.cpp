@@ -39,7 +39,7 @@ void Menu::Show() {
         std::promise<unsigned short> score_promise;
         std::future<unsigned short> score_future{score_promise.get_future()};
         std::thread game_thread{
-            &Menu::PlayNewSimpleGame, this, std::move(score_promise)
+            &Menu::PlayNewSimpleGame, std::move(score_promise)
         };
         UpdateHighScores(score_future.get());
         game_thread.join();
@@ -49,7 +49,7 @@ void Menu::Show() {
         std::promise<unsigned short> score_promise;
         std::future<unsigned short> score_future{score_promise.get_future()};
         std::thread game_thread{
-            &Menu::PlayNewAdvancedGame, this, std::move(score_promise)
+            &Menu::PlayNewAdvancedGame, std::move(score_promise)
         };
         UpdateHighScores(score_future.get());
         game_thread.join();

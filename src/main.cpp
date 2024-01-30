@@ -8,7 +8,6 @@ int main() {
   system("clear");
   std::cout << "WELCOME TO SNAKE GAME!" << std::endl;
   std::cout << std::endl;
-  Menu menu;
-  menu.Show();
+  Menu::Show();
   return 0;
 }

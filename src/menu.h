@@ -3,12 +3,12 @@
 
 #include <future>  // std::promise
 
-struct Menu {
-  void Show();
-  void PlayNewSimpleGame(std::promise<unsigned short>&&);
-  void PlayNewAdvancedGame(std::promise<unsigned short>&&);
-  void UpdateHighScores(unsigned short);
-  void ViewHighScores();
-};
+namespace Menu {
+void Show();
+void PlayNewSimpleGame(std::promise<unsigned short>&&);
+void PlayNewAdvancedGame(std::promise<unsigned short>&&);
+void UpdateHighScores(unsigned short);
+void ViewHighScores();
+};  // namespace Menu
 
 #endif
