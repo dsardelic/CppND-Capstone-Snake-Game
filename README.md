@@ -2,12 +2,12 @@
 
 This game was developed from a starter repo for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The code for this repo was inspired by [this](https://codereview.stackexchange.com/questions/212296/snake-game-in-c-with-sdl) excellent StackOverflow post and set of responses.
 
-The basic game functionality has been extended as follows:
-* The actual game is wrapped in a _menu loop_. Upon running the executable, a menu is shown in the terminal. The user then selects the desired menu option.
-* Existing game mode (1 user-controlled snake) is deemed Simple game mode. There is now also an Advanced game mode, where 1 user-controlled and 1 autonomous snake go after the same food. The autonomous snake is driven using the A* algorithm, and avoids moving over board edges.
-* The game keeps track of top 10 high scores, regardless of game mode (i.e. both modes share the same highscore data).
-
 <img src="snake_game.gif"/>
+
+Basic game functionality has been extended as follows:
+* The actual game is wrapped in a _menu loop_. Upon running the executable, a menu is shown in the terminal. The user then selects the desired menu option.
+* Existing game mode (1 blue-headed user-controlled snake) is deemed Simple game mode. There is now also an Advanced game mode, where the user-controlled and 1 magenta-headed autonomous snake go after the same food. The autonomous snake is driven using the A* algorithm, and avoids moving over board edges.
+* The game keeps track of top 10 high scores, regardless of game mode (i.e. both modes share the same high score data).
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
@@ -30,6 +30,14 @@ The basic game functionality has been extended as follows:
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it: `./SnakeGame`.
+
+## Program code highlights
+
+This project uses multiple modern C++ features and paradigms:
+
+* [Reading](src/highscore.cpp#L74) and [writing](src/highscore.cpp#L56) data from an external file.
+* Using data structures such as [arrays](src/game.cpp#L258) and [vectors](src/highscore.h#L27), as well as [constant variables](src/constants.h#L17) and [constant function parameters](src/location.h#L10).
+* 
 
 
 ## CC Attribution-ShareAlike 4.0 International
