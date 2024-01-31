@@ -18,15 +18,15 @@ struct HighScore {
 
 class HighScores {
  public:
-  HighScores(std::string);
+  HighScores(const std::string&);
   bool IsNewHighScore(unsigned short) const;
-  void Save(std::string, unsigned short);
+  void Save(const std::string&, unsigned short);
   void Print() const;
 
  private:
   std::vector<HighScore> high_scores_;
-  void Add(std::string, unsigned short);
-  void WriteToFile(std::string) const;
+  void Add(const std::string&, unsigned short);
+  void WriteToFile(const std::string&) const;
 };
 
 #endif

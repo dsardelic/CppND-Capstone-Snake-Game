@@ -35,7 +35,7 @@ bool HighScore::operator>(const HighScore& rhs) const {
   return score > rhs.score;
 }
 
-void HighScores::Add(std::string name, unsigned short score) {
+void HighScores::Add(const std::string& name, unsigned short score) {
   std::size_t i{0};
   for (; i < high_scores_.size(); ++i) {
     if (score > high_scores_.at(i).score) break;
@@ -48,7 +48,7 @@ void HighScores::Add(std::string name, unsigned short score) {
   high_scores_.resize(Constants::kMaxHighScoresCount);
 }
 
-void HighScores::WriteToFile(std::string uri) const {
+void HighScores::WriteToFile(const std::string& uri) const {
   std::ofstream ofile{uri};
   if (ofile.is_open()) {
     for (const auto& hs : high_scores_) {
@@ -63,7 +63,7 @@ void HighScores::WriteToFile(std::string uri) const {
   }
 }
 
-HighScores::HighScores(std::string uri) {
+HighScores::HighScores(const std::string& uri) {
   if (!std::experimental::filesystem::exists(uri)) {
     // create empty file
     std::ofstream ofile{uri};
@@ -95,7 +95,7 @@ bool HighScores::IsNewHighScore(unsigned short score) const {
   return score > min_high_score;
 }
 
-void HighScores::Save(std::string name, unsigned short score) {
+void HighScores::Save(const std::string& name, unsigned short score) {
   Add(name, score);
   WriteToFile(Constants::kHighScoresFileUri);
 }
