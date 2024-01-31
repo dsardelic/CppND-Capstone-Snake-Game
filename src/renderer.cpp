@@ -39,97 +39,70 @@ Renderer::~Renderer() {
   free(sdl_renderer_);
 }
 
-void Renderer::Render(const Snake& uc_snake, const Location& food) {
-  SDL_Rect block;
-  block.w = Constants::kScreenWidth / Constants::kGridWidth;
-  block.h = Constants::kScreenHeight / Constants::kGridHeight;
+void ClearScreen(SDL_Renderer* sdl_renderer) {
+  SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
+  SDL_RenderClear(sdl_renderer);
+}
 
-  // Clear screen
-  SDL_SetRenderDrawColor(sdl_renderer_, 0x1E, 0x1E, 0x1E, 0xFF);
-  SDL_RenderClear(sdl_renderer_);
+void RenderFood(
+    SDL_Renderer* sdl_renderer, SDL_Rect* block, const Location food
+) {
+  SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xCC, 0x00, 0xFF);
+  block->x = food.x * block->w;
+  block->y = food.y * block->h;
+  SDL_RenderFillRect(sdl_renderer, block);
+}
 
-  // Render food
-  SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0xCC, 0x00, 0xFF);
-  block.x = food.x * block.w;
-  block.y = food.y * block.h;
-  SDL_RenderFillRect(sdl_renderer_, &block);
-
-  // Render uc_snake's body
-  SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0xFF, 0xFF, 0xFF);
-  for (Location const& point : uc_snake.body) {
-    block.x = point.x * block.w;
-    block.y = point.y * block.h;
-    SDL_RenderFillRect(sdl_renderer_, &block);
+void RenderSnakeBody(
+    SDL_Renderer* sdl_renderer, SDL_Rect* block, const Snake& snake
+) {
+  SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+  for (Location const& point : snake.body) {
+    block->x = point.x * block->w;
+    block->y = point.y * block->h;
+    SDL_RenderFillRect(sdl_renderer, block);
   }
+}
 
-  // Render uc_snake's head
-  block.x = static_cast<int>(uc_snake.head_x) * block.w;
-  block.y = static_cast<int>(uc_snake.head_y) * block.h;
-  if (uc_snake.alive) {
-    SDL_SetRenderDrawColor(sdl_renderer_, 0x00, 0x7A, 0xCC, 0xFF);
+void RenderSnakeHead(
+    SDL_Renderer* sdl_renderer, SDL_Rect* block, const Snake& snake, int r,
+    int g, int b, int a
+) {
+  block->x = static_cast<int>(snake.head_x) * block->w;
+  block->y = static_cast<int>(snake.head_y) * block->h;
+  if (snake.alive) {
+    SDL_SetRenderDrawColor(sdl_renderer, r, g, b, a);
   } else {
-    SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0x00, 0x00, 0xFF);
+    SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0x00, 0x00, 0xFF);
   }
-  SDL_RenderFillRect(sdl_renderer_, &block);
+  SDL_RenderFillRect(sdl_renderer, block);
+}
 
-  // Update Screen
+void Renderer::Render(const Snake& uc_snake, const Location& food) {
+  SDL_Rect block = {
+      0, 0, Constants::kScreenWidth / Constants::kGridWidth,
+      Constants::kScreenHeight / Constants::kGridHeight
+  };
+  ClearScreen(sdl_renderer_);
+  RenderFood(sdl_renderer_, &block, food);
+  RenderSnakeBody(sdl_renderer_, &block, uc_snake);
+  RenderSnakeHead(sdl_renderer_, &block, uc_snake, 0x00, 0x7A, 0xCC, 0xFF);
   SDL_RenderPresent(sdl_renderer_);
 }
 
 void Renderer::Render(
     const Snake& uc_snake, const Snake& ac_snake, const Location& food
 ) {
-  SDL_Rect block;
-  block.w = Constants::kScreenWidth / Constants::kGridWidth;
-  block.h = Constants::kScreenHeight / Constants::kGridHeight;
-
-  // Clear screen
-  SDL_SetRenderDrawColor(sdl_renderer_, 0x1E, 0x1E, 0x1E, 0xFF);
-  SDL_RenderClear(sdl_renderer_);
-
-  // Render food
-  SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0xCC, 0x00, 0xFF);
-  block.x = food.x * block.w;
-  block.y = food.y * block.h;
-  SDL_RenderFillRect(sdl_renderer_, &block);
-
-  // Render snake1's body
-  SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0xFF, 0xFF, 0xFF);
-  for (Location const& point : uc_snake.body) {
-    block.x = point.x * block.w;
-    block.y = point.y * block.h;
-    SDL_RenderFillRect(sdl_renderer_, &block);
-  }
-
-  // Render snake2's body
-  SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0xFF, 0xFF, 0xFF);
-  for (Location const& point : ac_snake.body) {
-    block.x = point.x * block.w;
-    block.y = point.y * block.h;
-    SDL_RenderFillRect(sdl_renderer_, &block);
-  }
-
-  // Render snake2's head
-  block.x = static_cast<int>(ac_snake.head_x) * block.w;
-  block.y = static_cast<int>(ac_snake.head_y) * block.h;
-  if (ac_snake.alive) {
-    SDL_SetRenderDrawColor(sdl_renderer_, 0xC7, 0x15, 0x85, 0xFF);
-  } else {
-    SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0x00, 0x00, 0xFF);
-  }
-  SDL_RenderFillRect(sdl_renderer_, &block);
-
-  // Render snake1's head
-  block.x = static_cast<int>(uc_snake.head_x) * block.w;
-  block.y = static_cast<int>(uc_snake.head_y) * block.h;
-  if (uc_snake.alive) {
-    SDL_SetRenderDrawColor(sdl_renderer_, 0x00, 0x7A, 0xCC, 0xFF);
-  } else {
-    SDL_SetRenderDrawColor(sdl_renderer_, 0xFF, 0x00, 0x00, 0xFF);
-  }
-  SDL_RenderFillRect(sdl_renderer_, &block);
-
-  // Update Screen
+  SDL_Rect block = {
+      0, 0, Constants::kScreenWidth / Constants::kGridWidth,
+      Constants::kScreenHeight / Constants::kGridHeight
+  };
+  ClearScreen(sdl_renderer_);
+  RenderFood(sdl_renderer_, &block, food);
+  RenderSnakeBody(sdl_renderer_, &block, ac_snake);
+  RenderSnakeBody(sdl_renderer_, &block, uc_snake);
+  RenderSnakeHead(sdl_renderer_, &block, ac_snake, 0xC7, 0x15, 0x85, 0xFF);
+  RenderSnakeHead(sdl_renderer_, &block, uc_snake, 0x00, 0x7A, 0xCC, 0xFF);
   SDL_RenderPresent(sdl_renderer_);
 }
 
