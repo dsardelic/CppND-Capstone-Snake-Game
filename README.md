@@ -2,12 +2,21 @@
 
 This game was developed from a starter repo for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The code for this repo was inspired by [this](https://codereview.stackexchange.com/questions/212296/snake-game-in-c-with-sdl) excellent StackOverflow post and set of responses.
 
-<img src="snake_game.gif"/>
+<center><img src="simple_game.gif"/></center><br/>
 
 Basic game functionality has been extended as follows:
+
 * The actual game is wrapped in a _menu loop_. Upon running the executable, a menu is shown in the terminal. The user then selects the desired menu option.
-* Existing game mode (1 blue-headed user-controlled snake) is deemed Simple game mode. There is now also an Advanced game mode, where the user-controlled and 1 magenta-headed autonomous snake go after the same food. The autonomous snake is driven using the A* algorithm, and avoids moving over board edges.
-* The game keeps track of top 10 high scores, regardless of game mode (i.e. both modes share the same high score data).
+
+<center><img src="menu.png"/></center><br/>
+
+* Existing game mode (i.e. one blue-headed user-controlled snake) is deemed as Simple game mode. Now there is also an Advanced game mode, where the user-controlled snake and one magenta-headed autonomous snake go after the same food. The autonomous snake is driven using the A* algorithm, and avoids moving over board edges.
+
+<center><img src="advanced_game.png"/></center><br/>
+
+* The game keeps track of top 10 high scores regardless of game mode (i.e. both modes share the same high score data).
+
+<center><img src="highscores.png"/></center><br/>
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
@@ -40,9 +49,9 @@ This project uses multiple modern C++ features and paradigms:
 * [Function overloading](src/renderer.h#L13) with different signatures for the same function name.
 * [Inheritance hierarchies](src/game.h#L42) with [virtual base class member function overriding](src/game.h#L45).
 * [Function templates](src/menu.h#L9).
-* Passing variables by references([example 1](src/location.h#L10), [example2](src/menu.cpp#L17)).
+* Passing variables by references ([example 1](src/location.h#L10), [example2](src/menu.cpp#L17)).
 * [Freeing up](src/renderer.cpp#L39) unmanaged dynamically allocated memory using a destructor.
-* [Move semantics](src/highscore.cpp#L78).
+* [Using std::move](src/highscore.cpp#L78) as one aspect of move semantics.
 * [Smart pointers](src/menu.cpp#L20) and [RAII](src/menu.cpp#L20) (Resource Acquisition Is Initialization) pattern.
 * [Multithreading](src/menu.cpp#L29).
 * [Promise/future](src/menu.cpp#L28) pattern.
