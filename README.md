@@ -37,7 +37,15 @@ This project uses multiple modern C++ features and paradigms:
 
 * [Reading](src/highscore.cpp#L74) and [writing](src/highscore.cpp#L56) data from an external file.
 * Using data structures such as [arrays](src/game.cpp#L258) and [vectors](src/highscore.h#L27), as well as [constant variables](src/constants.h#L17) and [constant function parameters](src/location.h#L10).
-* 
+* [Function overloading](src/renderer.h#L13) with different signatures for the same function name.
+* [Inheritance hierarchies](src/game.h#L42) with [virtual base class member function overriding](src/game.h#L45).
+* [Function templates](src/menu.h#L9).
+* Passing variables by references([example 1](src/location.h#L10), [example2](src/menu.cpp#L17)).
+* [Freeing up](src/renderer.cpp#L39) unmanaged dynamically allocated memory using a destructor.
+* [Move semantics](src/highscore.cpp#L78).
+* [Smart pointers](src/menu.cpp#L20) and [RAII](src/menu.cpp#L20) (Resource Acquisition Is Initialization) pattern.
+* [Multithreading](src/menu.cpp#L29).
+* [Promise/future](src/menu.cpp#L28) pattern.
 
 
 ## CC Attribution-ShareAlike 4.0 International
