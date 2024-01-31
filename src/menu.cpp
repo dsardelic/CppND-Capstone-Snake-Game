@@ -5,7 +5,6 @@
 #include <future>    // std::promise, std::future
 #include <iostream>  // std::cout
 #include <memory>    // std::unique_ptr, std::make_unique
-#include <random>    // std::random_device
 #include <string>    // std::string, std::getline
 #include <thread>    // std::thread
 
