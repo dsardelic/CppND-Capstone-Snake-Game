@@ -90,7 +90,7 @@ void SimpleGame::PlaceFood() {
 void SimpleGame::Update(bool& running) {
   if (!uc_snake_.alive) {
     std::this_thread::sleep_for(
-        std::chrono::milliseconds(Constants::kMilisBeforeWindowClose)
+        std::chrono::milliseconds(Constants::kMilisecondsBeforeWindowClose)
     );
     running = false;
     return;
@@ -189,7 +189,7 @@ void AdvancedGame::PlaceFood() {
 void AdvancedGame::Update(bool& running) {
   if (!(uc_snake_.alive && ac_snake_.alive)) {
     std::this_thread::sleep_for(
-        std::chrono::milliseconds(Constants::kMilisBeforeWindowClose)
+        std::chrono::milliseconds(Constants::kMilisecondsBeforeWindowClose)
     );
     running = false;
     return;
