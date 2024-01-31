@@ -2,21 +2,20 @@
 
 This game was developed from a starter repo for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The code for this repo was inspired by [this](https://codereview.stackexchange.com/questions/212296/snake-game-in-c-with-sdl) excellent StackOverflow post and set of responses.
 
-<center><img src="simple_game.gif"/></center><br/>
+<p align="center"><img src="simple_game.gif"/></p><br/>
 
 Basic game functionality has been extended as follows:
-
 * The actual game is wrapped in a _menu loop_. Upon running the executable, a menu is shown in the terminal. The user then selects the desired menu option.
 
-<center><img src="menu.png"/></center><br/>
+<p align="center"><img src="menu.png"/></p><br/>
 
 * Existing game mode (i.e. one blue-headed user-controlled snake) is deemed as Simple game mode. Now there is also an Advanced game mode, where the user-controlled snake and one magenta-headed autonomous snake go after the same food. The autonomous snake is driven using the A* algorithm, and avoids moving over board edges.
 
-<center><img src="advanced_game.png"/></center><br/>
+<p align="center"><img src="advanced_game.png"/></p><br/>
 
 * The game keeps track of top 10 high scores regardless of game mode (i.e. both modes share the same high score data).
 
-<center><img src="highscores.png"/></center><br/>
+<p align="center"><img src="highscores.png"/></p><br/>
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
@@ -47,7 +46,7 @@ This project uses multiple modern C++ features and paradigms:
 * [Reading](src/highscore.cpp#L74) and [writing](src/highscore.cpp#L56) data from an external file.
 * Using data structures such as [arrays](src/game.cpp#L258) and [vectors](src/highscore.h#L27), as well as [constant variables](src/constants.h#L17) and [constant function parameters](src/location.h#L10).
 * [Function overloading](src/renderer.h#L13) with different signatures for the same function name.
-* [Inheritance hierarchies](src/game.h#L42) with [virtual base class member function overriding](src/game.h#L45).
+* [Inheritance hierarchies](src/game.h#L42) with [virtual base class member function overriding](src/game.h#L45) and [runtime polymorphism](src/menu.cpp#L21).
 * [Function templates](src/menu.h#L9).
 * Passing variables by references ([example 1](src/location.h#L10), [example2](src/menu.cpp#L17)).
 * [Freeing up](src/renderer.cpp#L39) unmanaged dynamically allocated memory using a destructor.
